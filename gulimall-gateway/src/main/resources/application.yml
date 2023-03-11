@@ -1,0 +1,54 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: product_rote
+          uri: lb://gulimall-product
+          predicates:
+            - Path=/api/product/**,/hello
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
+
+        - id: third_route
+          uri: lb://gulimall-third-party
+          predicates:
+            - Path=/api/thirdparty/**
+          filters:
+            - RewritePath=/api/thirdparty/(?<segment>.*),/$\{segment}
+
+        - id: member_rote
+          uri: lb://gulimall-member
+          predicates:
+            - Path=/api/member/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
+
+        - id: ware_rote
+          uri: lb://gulimall-ware
+          predicates:
+            - Path=/api/ware/**
+          filters:
+            - RewritePath=/api/(?<segment>.*),/$\{segment}
+
+        - id: admin_route
+          uri: lb://renren-fast
+          predicates:
+            - Path=/api/**  # 接收到所有/api/**的请求
+          filters:
+            # http://localhost:88/api/** --> http://localhost:8080/renren-fast/**
+            - RewritePath=/api/(?<segment>.*),/renren-fast/$\{segment}  # 将请求转换为指定的格式
+
+        - id: gulimall_host_rote
+          uri: lb://gulimall-product
+          predicates:
+            - Host=gulimall.com,item.gulimall.com
+
+        - id: gulimall_search_rote
+          uri: lb://gulimall-search
+          predicates:
+            - Host=search.gulimall.com
+
+        - id: gulimall_auth_rote
+          uri: lb://gulimall-auth
+          predicates:
+            - Host=auth.gulimall.com
